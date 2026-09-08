@@ -1,3 +1,5 @@
+import math 
+
 MOCK_SOCIO_DATABASE = {
      "haldwani": {
         "location_id": 1,
@@ -60,3 +62,27 @@ MOCK_SOCIO_DATABASE = {
         "grid_local_capacity": "stable",
     }
 }
+
+def calculate_imd_heat_index(t_celsius, rel_h):
+    if t_celsius < 26.7:
+        return round(t_celsius, 1)
+
+    t = (t_celsius * 9 / 5) + 32
+    hi_sim = 0.5 * (t + 61.0 + ((t - 68.0) * 1.2) + (rh * 0.094))
+    if hi_simple < 80:
+        return round((hi_simple - 32) * 5 / 9, 1)
+        
+    c1, c2, c3, c4, c5, c6, c7, c8, c9 = [
+        -42.379, 2.04901523, 10.14333127, -0.22475541,
+        -0.00683783, -0.05481717, 0.00122874, 0.00085282, -0.00000199
+    ]
+
+    h_i = (c1 + (c2 * t) + (c3 * rh) + (c4 * t * rh) + (c5 * t**2) +
+            (c6 * rh**2) + (c7 * t**2 * rh) + (c8 * t * rh**2) + (c9 * t**2 * rh**2))
+            
+    if (rel_h < 13) and (t >= 80 and t <= 112):
+        h_i -= ((13 - rel_h) / 4) * math.sqrt((17 - abs(t - 95.0)) / 17)
+    elif (rh > 85) and (t >= 80 and t <= 87):
+        h_i += ((rel_h - 85) / 10) * ((87 - t) / 5)
+
+    return round((h_i - 32) * 5 / 9, 1)
