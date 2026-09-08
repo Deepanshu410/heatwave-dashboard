@@ -86,3 +86,22 @@ def calculate_imd_heat_index(t_celsius, rel_h):
         h_i += ((rel_h - 85) / 10) * ((87 - t) / 5)
 
     return round((h_i - 32) * 5 / 9, 1)
+
+def calculate_swbgt(t_celcius, rel_h):
+    e = (rel_h / 100.0) * 6.105 * math.exp((17.27 * t_celcius) / (237.7 + t_celcius))
+    return round((0.567 * t_celcius) + (0.393 * e) + 3.94, 1)
+
+
+def calculate_wet_bulb_stull(t, rh):
+    """Calculates Wet-Bulb temperature threshold via Stull's equation."""
+    tw = (t * math.atan(0.151977 * (rh + 8.313659)**0.5) + 
+          math.atan(t + rh) - math.atan(rh - 1.676331) + 
+          0.00391838 * (rh**1.5) * math.atan(0.023101 * rh) - 4.686035)
+    return round(tw, 1)
+
+def calculate_utci_simplified(t, rh, v10):
+    """Corrected UTCI operational approximation formula (Wind + Humidity Convective model)"""
+    va = max(0.5, v10) 
+    vapor_pressure = (rh / 100.0) * 6.112 * math.exp((17.67 * t) / (t + 243.5))
+    utci_val = t + (0.34 * vapor_pressure) - (0.75 * va) - 2.1
+    return round(utci_val, 1)
