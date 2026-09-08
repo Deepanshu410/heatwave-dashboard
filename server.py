@@ -105,3 +105,33 @@ def calculate_utci_simplified(t, rh, v10):
     vapor_pressure = (rh / 100.0) * 6.112 * math.exp((17.67 * t) / (t + 243.5))
     utci_val = t + (0.34 * vapor_pressure) - (0.75 * va) - 2.1
     return round(utci_val, 1)
+
+def compute_mortality_risk(actual_temp, metrics, ward_meta):
+    
+    hi = metrics["heat_index"]
+    tw = metrics["wet_bulb"]
+    utci = metrics["utci"]
+    
+    elderly_ratio = ward_meta["elderly_ratio"]
+    density = ward_meta["density_per_km2"]
+    
+    W_HEAT_INDEX = 0.0820       
+    W_WET_BULB   = 0.1450       
+    W_UTCI       = 0.0540       
+    W_ELDERLY    = 3.2500       
+    W_DENSITY    = 0.00015     
+    B_INTERCEPT  = -4.1200      
+    
+    raw_prediction = (
+        B_INTERCEPT + 
+        (W_HEAT_INDEX * hi) + 
+        (W_WET_BULB * tw) + 
+        (W_UTCI * utci) + 
+        (W_ELDERLY * elderly_ratio) + 
+        (W_DENSITY * density)
+    )
+    
+    infra_multiplier = 1.25 if ward_meta["grid_local_capacity"] == "critical" else 1.0
+    scaled_prediction = raw_prediction * infra_multiplier
+    
+    return min(10.0, max(0.0, round(scaled_prediction, 2)))
