@@ -1,0 +1,17 @@
+{
+  "intercept": -8.876957,
+  "w_heat_index": 1.410492,
+  "w_wet_bulb": -0.553042,
+  "w_utci": 0.102008,
+  "r2_score": 0.996959,
+  "mse": 0.157901,
+  "records_count": 1576,
+  "dataset_name": "Daily Delhi Climate Historical Records",
+  "feature_names": [
+    "feature_hi",
+    "feature_tw",
+    "feature_utci"
+  ],
+  "formula_description": "target_y = intercept + w_hi * feature_hi + w_tw * feature_tw + w_utci * feature_utci",
+  "target_description": "Temperature adjusted for convective wind cooling (temp - 0.12 * wind_speed)"
+}
